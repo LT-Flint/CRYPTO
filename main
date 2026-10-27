@@ -1,0 +1,40 @@
+# -*- coding: utf-8 -*-
+"""
+
+
+Функция текстирования шифрования паролей через обфускацию пароля через XOR и Base64. В исходном коде вместо открытого пароля будет храниться закодированная строка, а при запуске функция Cry_pass() восстановит пароль и присвоит его обратно переменной SSH_PASSWORD.
+это не криптографическая защита, а скрытие пароля от беглого просмотра кода. Человек, имеющий исходник и ключ, сможет восстановить пароль.
+base64.b64decode() преобразует её в байты.
+b ^ KEY выполняет операцию XOR для каждого байта.
+.decode("utf-8") восстанавливает обычную строку.
+"""
+
+import base64
+
+KEY = 73
+
+SSH_PASSWORD = "PassПароль123№;%+-_"
+
+# Восстановление пароля
+def Cry_pass(password: str) -> str:
+    data = base64.b64decode(password, validate=True)
+    decrypted = bytes(b ^ KEY for b in data)
+    return decrypted.decode("utf-8")
+
+# Кодирование пароля
+def Enc_pass(password: str) -> str:
+    data = password.encode("utf-8")
+    encrypted = bytes(b ^ KEY for b in data)
+    return base64.b64encode(encrypted).decode("ascii")
+
+
+if __name__ == "__main__":
+    # Кодируем
+    encoded_password = Enc_pass(SSH_PASSWORD)
+
+    # Восстанавливаем
+    decoded_password = Cry_pass(encoded_password)
+
+    print("Закодированное значение:", encoded_password)
+    print("Проверка совпадения:", decoded_password == SSH_PASSWORD)
+
